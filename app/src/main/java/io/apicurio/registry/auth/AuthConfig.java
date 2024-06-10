@@ -33,7 +33,7 @@ public class AuthConfig {
     @Dynamic(label = "Basic Auth with Strimzi User", description = "When selected, users are permitted to authenticate using HTTP basic authentication using usernames and passwords of Strimzi's KafkaUser resources.", requires = {
         "quarkus.http.auth.basic=true",
         "apicurio.auth.enabled=true",
-        "apicurio.auth.owner-only-authorization=true"
+        "apicurio.auth.owner-only-authorization=false"
     })
     @ConfigProperty(name = "apicurio.auth.basic-auth-with-strimzi-user.enabled", defaultValue = "false")
     @Info(category = "auth", description = "Enable basic auth with Strimzi user")

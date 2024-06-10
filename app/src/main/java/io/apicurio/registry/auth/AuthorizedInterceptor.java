@@ -46,6 +46,9 @@ public class AuthorizedInterceptor {
     @Inject
     OwnerBasedAccessController obac;
 
+    @Inject
+    TopicAclBasedAccessController tabac;
+
     @AroundInvoke
     public Object authorizeMethod(InvocationContext context) throws Exception {
 
@@ -104,7 +107,7 @@ public class AuthorizedInterceptor {
         }
 
         // If the user is an admin (via the admin-override check) then there's no need to
-        // check rbac or obac.
+        // check rbac or obac...
         if (adminOverride.isAdmin()) {
             log.trace("Admin override successful.");
             return context.proceed();
@@ -124,6 +127,12 @@ public class AuthorizedInterceptor {
         // If Owner-only is enabled, apply ownership rules
         if (authConfig.ownerOnlyAuthorizationEnabled.get() && !obac.isAuthorized(context)) {
             log.warn("OBAC enabled and operation not permitted due to wrong owner.");
+            throw new ForbiddenException("User " + securityIdentity.getPrincipal().getName() + " is not authorized to perform the requested operation.");
+        }
+
+        // If basic auth with Strimzi users is enabled, and the user is authorized to read/write the relevant topic, allow it
+        if (authConfig.basicAuthWithStrimziUserEnabled.get() && !tabac.isAuthorized(context)) {
+            log.warn("Strimzi Topic ACL Based Access Control enabled and operation not permitted due to missing ACLs.");
             throw new ForbiddenException("User " + securityIdentity.getPrincipal().getName() + " is not authorized to perform the requested operation.");
         }
 
