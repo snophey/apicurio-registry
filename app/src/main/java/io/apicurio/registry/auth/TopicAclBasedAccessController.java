@@ -91,8 +91,9 @@ public class TopicAclBasedAccessController extends AbstractAccessController {
         KafkaUserAuthorizationSimple authorization = (KafkaUserAuthorizationSimple) Optional.ofNullable(user)
             .map(KafkaUser::getSpec)
             .map(KafkaUserSpec::getAuthorization)
+            .filter(auth -> "simple".equals(auth.getType()))
             .orElse(null);
-        if (authorization == null || !"simple".equals(authorization.getType())) {
+        if (authorization == null) {
             return false;
         }
         // if there is an ALLOW rule for the operation and no DENY rule, then the operation is allowed
