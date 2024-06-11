@@ -13,7 +13,8 @@ public class BasicAuthWithStrimziUsersTestProfile implements QuarkusTestProfile 
         Map<String, String> map = new HashMap<>();
         map.put("quarkus.http.auth.basic", "true");
         map.put("apicurio.auth.enabled", "true");
-        map.put("apicurio.auth.owner-only-authorization", "true");
+        map.put("apicurio.auth.owner-only-authorization", "false");
+        map.put("apicurio.auth.topic-acl-based-authorizer.enabled", "true");
         map.put("apicurio.auth.basic-auth-with-strimzi-user.enabled", "true");
         return map;
     }

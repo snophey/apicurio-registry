@@ -35,12 +35,15 @@ public class TopicAclBasedAccessController extends AbstractAccessController {
     public boolean isAuthorized(InvocationContext context) {
         Authorized annotation = context.getMethod().getAnnotation(Authorized.class);
         AuthorizedLevel level = annotation.level();
+        AuthorizedStyle style = annotation.style();
 
         // We follow the same permission model as that of Confluent's Topic ACL Authorizer
         // https://docs.confluent.io/platform/current/confluent-security-plugins/schema-registry/authorization/topicacl_authorizer.html
         var topicName = getTopicName(context);
         if (topicName == null) {
-            return false;
+            // If the topic name cannot be extracted (because the operation is not related to a topic), then behave
+            // as if the operation is authorized.
+            return true;
         }
 
         return switch (level) {

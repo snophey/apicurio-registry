@@ -33,11 +33,17 @@ public class AuthConfig {
     @Dynamic(label = "Basic Auth with Strimzi User", description = "When selected, users are permitted to authenticate using HTTP basic authentication using usernames and passwords of Strimzi's KafkaUser resources.", requires = {
         "quarkus.http.auth.basic=true",
         "apicurio.auth.enabled=true",
-        "apicurio.auth.owner-only-authorization=false"
     })
     @ConfigProperty(name = "apicurio.auth.basic-auth-with-strimzi-user.enabled", defaultValue = "false")
     @Info(category = "auth", description = "Enable basic auth with Strimzi user")
     Supplier<Boolean> basicAuthWithStrimziUserEnabled;
+
+    @Dynamic(label = "Topic ACL-Based Authorizer for Strimzi Users", description = "When enabled, users are permitted to read/write subjects if the corresponding KafkaUser has the relevant read/write ACLs to the corresponding topic", requires = {
+        "apicurio.auth.basic-auth-with-strimzi-user.enabled=true",
+    })
+    @ConfigProperty(name = "apicurio.auth.topic-acl-based-authorizer.enabled", defaultValue = "false")
+    @Info(category = "auth", description = "Topic ACL Based Authorizer for Strimzi Users")
+    Supplier<Boolean> topicBasedAclAuthorizerEnabled;
 
     @ConfigProperty(name = "apicurio.auth.strimzi.kubernetes.namespace", defaultValue = "kafka")
     @Info(category = "auth", description = "Kubernetes namespace to be queried for KafkaUser resources.")

@@ -131,7 +131,7 @@ public class AuthorizedInterceptor {
         }
 
         // If basic auth with Strimzi users is enabled, and the user is authorized to read/write the relevant topic, allow it
-        if (authConfig.basicAuthWithStrimziUserEnabled.get() && !tabac.isAuthorized(context)) {
+        if (authConfig.topicBasedAclAuthorizerEnabled.get() && authConfig.basicAuthWithStrimziUserEnabled.get() && !tabac.isAuthorized(context)) {
             log.warn("Strimzi Topic ACL Based Access Control enabled and operation not permitted due to missing ACLs.");
             throw new ForbiddenException("User " + securityIdentity.getPrincipal().getName() + " is not authorized to perform the requested operation.");
         }
