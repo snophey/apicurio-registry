@@ -1,15 +1,14 @@
 package io.apicurio.registry.auth;
 
-import java.util.function.Supplier;
-
+import io.apicurio.common.apps.config.Dynamic;
+import io.apicurio.common.apps.config.Info;
+import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
-import jakarta.annotation.PostConstruct;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 
-import io.apicurio.common.apps.config.Dynamic;
-import io.apicurio.common.apps.config.Info;
+import java.util.function.Supplier;
 
 @Singleton
 public class AuthConfig {
@@ -30,6 +29,17 @@ public class AuthConfig {
     @Info(category = "auth", description = "Enable basic auth", availableSince = "1.1.X-SNAPSHOT", registryAvailableSince = "3.X.X.Final", studioAvailableSince = "1.0.0")
     boolean basicAuthEnabled;
 
+    @Dynamic(label = "Basic Auth with Strimzi User", description = "When selected, users are permitted to authenticate using HTTP basic authentication using usernames and passwords of Strimzi's KafkaUser resources.", requires = {
+            "quarkus.http.auth.basic=true", "apicurio.auth.enabled=true",
+            "apicurio.auth.owner-only-authorization=true" })
+    @ConfigProperty(name = "apicurio.auth.basic-auth-with-strimzi-user.enabled", defaultValue = "false")
+    @Info(category = "auth", description = "Enable basic auth with Strimzi user")
+    Supplier<Boolean> basicAuthWithStrimziUserEnabled;
+
+    @ConfigProperty(name = "apicurio.auth.strimzi.kubernetes.namespace", defaultValue = "kafka")
+    @Info(category = "auth", description = "Kubernetes namespace to be queried for KafkaUser resources.")
+    String strimziKubernetesNamespace;
+
     @ConfigProperty(name = "apicurio.auth.role-based-authorization", defaultValue = "false")
     @Info(category = "auth", description = "Enable role based authorization", availableSince = "2.1.0.Final")
     boolean roleBasedAuthorizationEnabled;
@@ -40,9 +50,7 @@ public class AuthConfig {
     Supplier<Boolean> ownerOnlyAuthorizationEnabled;
 
     @Dynamic(label = "Artifact group owner-only authorization", description = "When selected, Service Registry allows only the artifact group owner (creator) to modify an artifact group.", requires = {
-            "apicurio.auth.enabled=true",
-            "apicurio.auth.owner-only-authorization=true"
-    })
+            "apicurio.auth.enabled=true", "apicurio.auth.owner-only-authorization=true" })
     @ConfigProperty(name = "apicurio.auth.owner-only-authorization.limit-group-access", defaultValue = "false")
     @Info(category = "auth", description = "Artifact group owner-only authorization", availableSince = "2.1.0.Final")
     Supplier<Boolean> ownerOnlyAuthorizationLimitGroupAccess;
@@ -53,9 +61,7 @@ public class AuthConfig {
     Supplier<Boolean> anonymousReadAccessEnabled;
 
     @Dynamic(label = "Authenticated read access", description = "When selected, requests from any authenticated user are granted at least read-only access.", requires = {
-            "apicurio.auth.enabled=true",
-            "apicurio.auth.role-based-authorization=true"
-    })
+            "apicurio.auth.enabled=true", "apicurio.auth.role-based-authorization=true" })
     @ConfigProperty(name = "apicurio.auth.authenticated-read-access.enabled", defaultValue = "false")
     @Info(category = "auth", description = "Authenticated read access", availableSince = "2.1.4.Final")
     Supplier<Boolean> authenticatedReadAccessEnabled;
